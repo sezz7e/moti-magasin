@@ -13,6 +13,7 @@
         <a href="{{ route('home') }}" class="font-serif text-2xl tracking-[0.2em] uppercase">Moti Atelier</a>
         <nav class="text-sm tracking-wide space-x-6">
             <a href="{{ route('home') }}#collections" class="hover:text-gold">Collections</a>
+            <a href="{{ route('cart') }}" class="hover:text-gold">Cart ({{ \App\Support\Cart::count() }})</a>
         </nav>
     </header>
 
