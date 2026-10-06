@@ -14,6 +14,7 @@
         <nav class="text-sm tracking-wide space-x-6">
             <a href="{{ route('home') }}#collections" class="hover:text-gold">Collections</a>
             <a href="{{ route('cart') }}" class="hover:text-gold">Cart ({{ \App\Support\Cart::count() }})</a>
+            <a href="{{ route('checkout') }}" class="inline-block bg-ink text-ivory px-10 py-4 tracking-widest uppercase text-sm hover:bg-burgundy transition">Checkout</a>
         </nav>
     </header>
 
