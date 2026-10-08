@@ -1,4 +1,4 @@
-<a href="{{ route('product', $product->slug) }}" class="group block">
+<a data-reveal href="{{ route('product', $product->slug) }}" class="group block">
     <div class="aspect-[4/5] bg-ink/5 overflow-hidden">
         @if($product->getFirstMediaUrl('gallery'))
             <img src="{{ $product->getFirstMediaUrl('gallery', 'card') }}" alt="{{ $product->name }}"
