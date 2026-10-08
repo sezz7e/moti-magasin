@@ -21,7 +21,7 @@ class CheckoutController extends Controller
         }
 
         $subtotal = Cart::total();
-        $shipping = config('store.shipping_fee');
+        $shipping = Cart::shippingFor($subtotal);
 
         return view('checkout', [
             'lines' => $lines,
@@ -33,7 +33,7 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
-        $request->merge(['phone' => preg_replace('/[\s\-]/', '', (string) $request->phone)]);
+        $request->merge(['phone' => preg_replace('/[\s\-\(\)\.]/', '', (string) $request->phone)]);
 
         $data = $request->validate([
             'customer_name' => ['required', 'string', 'max:120'],
@@ -78,13 +78,14 @@ class CheckoutController extends Controller
                 throw ValidationException::withMessages(['cart' => 'Your cart is empty.']);
             }
 
-            $shipping = config('store.shipping_fee');
+            $shipping = Cart::shippingFor($subtotal);
 
             $order = Order::create($data + [
-                'order_number' => 'MA-' . strtoupper(Str::random(6)),
+                'order_number' => 'MA-'.strtoupper(Str::random(6)),
                 'subtotal' => $subtotal,
                 'shipping' => $shipping,
                 'total' => $subtotal + $shipping,
+                'payment_method' => 'cod',
             ]);
 
             foreach ($items as $item) {
@@ -111,7 +112,7 @@ class CheckoutController extends Controller
     {
         abort_unless(session('last_order') === $number, 404);
 
-        $order = Order::with('items')->where('order_number', $number)->firstOrFail();
+        $order = Order::with('items.product')->where('order_number', $number)->firstOrFail();
 
         return view('thanks', compact('order'));
     }

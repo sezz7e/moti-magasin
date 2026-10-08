@@ -1,23 +1,69 @@
-@extends('layouts.app')
+@extends('layouts.checkout', ['title' => 'Order confirmed'])
 
 @section('content')
-<section class="px-6 md:px-12 py-28 text-center max-w-2xl mx-auto">
-    <p class="text-xs tracking-[0.4em] uppercase text-gold">Thank you</p>
-    <h1 class="font-serif text-5xl mt-6">Order placed</h1>
-    <p class="mt-6 text-ink/70">Your order number is <strong>{{ $order->order_number }}</strong>.
-        We'll contact you on {{ $order->phone }} to confirm delivery.</p>
+<div class="co">
+    <div class="co-left">
+        <div class="co-left-in">
+            <header class="co-head">
+                <a href="{{ route('home') }}" class="logo">Moti Atelier</a>
+            </header>
 
-    <div class="mt-10 text-sm text-left divide-y divide-ink/10">
-        @foreach($order->items as $item)
-            <div class="flex justify-between py-3">
-                <span>{{ $item->product_name }} &times; {{ $item->quantity }}</span>
-                <span>PKR {{ number_format($item->price * $item->quantity) }}</span>
+            <details class="m-summary">
+                <summary><span>Show order summary</span><strong>PKR {{ number_format($order->total) }}</strong></summary>
+                <div class="m-summary-body">@include('partials.order-summary')</div>
+            </details>
+
+            <div class="confirm">
+                <div class="check">&#10003;</div>
+                <div>
+                    <p class="muted">Order {{ $order->order_number }}</p>
+                    <h1>Thank you, {{ \Illuminate\Support\Str::before($order->customer_name, ' ') }}!</h1>
+                </div>
             </div>
-        @endforeach
-        <div class="flex justify-between py-3"><span>Shipping</span><span>PKR {{ number_format($order->shipping) }}</span></div>
-        <div class="flex justify-between py-3 font-serif text-xl"><span>Total (pay on delivery)</span><span>PKR {{ number_format($order->total) }}</span></div>
+
+            <div class="card">
+                <h2>Your order is confirmed</h2>
+                <p>We'll contact you on <span class="val">{{ $order->phone }}</span> to confirm delivery.</p>
+            </div>
+
+            <div class="card">
+                <h2>Order details</h2>
+                <div class="card-grid">
+                    <div>
+                        <p><strong class="val">Contact</strong></p>
+                        <p>{{ $order->phone }}</p>
+                        @if($order->email)<p>{{ $order->email }}</p>@endif
+                    </div>
+                    <div>
+                        <p><strong class="val">Delivery address</strong></p>
+                        <p>{{ $order->customer_name }}</p>
+                        <p>{{ $order->address }}</p>
+                        <p>{{ $order->city }}</p>
+                    </div>
+                    <div>
+                        <p><strong class="val">Payment</strong></p>
+                        <p>Cash on delivery &middot; PKR {{ number_format($order->total) }}</p>
+                    </div>
+                    @if($order->notes)
+                        <div>
+                            <p><strong class="val">Order note</strong></p>
+                            <p>{{ $order->notes }}</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <div class="foot-row">
+                <span></span>
+                <a href="{{ route('home') }}" class="btn">Continue shopping</a>
+            </div>
+        </div>
     </div>
 
-    <a href="{{ route('home') }}" class="inline-block mt-10 underline hover:text-gold">Continue shopping</a>
-</section>
+    <div class="co-right">
+        <div class="co-right-in">
+            @include('partials.order-summary')
+        </div>
+    </div>
+</div>
 @endsection

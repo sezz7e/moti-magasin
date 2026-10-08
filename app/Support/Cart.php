@@ -35,7 +35,8 @@ class Cart
     {
         $raw = self::raw();
 
-        return Product::whereIn('id', array_keys($raw))
+        return Product::with('collection')
+            ->whereIn('id', array_keys($raw))
             ->where('is_active', true)
             ->get()
             ->map(function ($p) use ($raw) {
@@ -61,8 +62,19 @@ class Cart
         return (int) self::lines()->sum('qty');
     }
 
+    public static function shippingFor(int $subtotal): int
+    {
+        if ($subtotal <= 0) {
+            return 0;
+        }
+
+        $free = config('store.free_shipping_over');
+
+        return ($free && $subtotal >= $free) ? 0 : (int) config('store.shipping_fee');
+    }
+
     public static function clear(): void
     {
-        session()->forget('cart');
+        session()->forget(['cart', 'cart_note']);
     }
 }

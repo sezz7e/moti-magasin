@@ -8,3 +8,5 @@
     --color-gold: #b08d57;
     --color-burgundy: #5a1e2b;
 }
+
+[data-tilt], [data-hero-img] { transform-style: preserve-3d; will-change: transform; }
