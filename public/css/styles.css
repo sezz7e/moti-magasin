@@ -15888,3 +15888,18 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
 /*-------------- RTL ----------------- */
 
 /*# sourceMappingURL=styles.css.map */
+
+.featured-collections .wg-cls .image {
+    width: 100%;
+    max-width: 500px;
+    max-height: 500px;
+    aspect-ratio: 1 / 1;
+    margin-inline: auto;
+    overflow: hidden;
+}
+
+.featured-collections .wg-cls .image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* fills the square, crops overflow */
+}
