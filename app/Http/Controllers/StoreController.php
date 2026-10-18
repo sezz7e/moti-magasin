@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\ShopFilters;
 use App\Models\Collection;
 use App\Models\Product;
+
 use Illuminate\Http\Request;
+
 
 class StoreController extends Controller
 {
@@ -16,14 +19,16 @@ class StoreController extends Controller
         ]);
     }
 
-    public function collection(string $slug)
+    public function collection(Request $request, string $slug)
     {
         $collection = Collection::where('slug', $slug)->firstOrFail();
 
-        return view('collection', [
-            'collections' => Collection::with(['products' => fn ($q) => $q->where('is_active', true)->latest()])->orderBy('sort_order')->get(),
-            'products' => $collection->products()->where('is_active', true)->latest()->get(),
-        ]);
+        return view('collection', ShopFilters::run($request, $collection) + ['collection' => $collection]);
+    }
+
+    public function shop(Request $request)
+    {
+        return view('collection', ShopFilters::run($request, null) + ['collection' => null]);
     }
 
     public function product(string $slug)

@@ -20,7 +20,10 @@ class CartController extends Controller
     {
         abort_unless($product->is_active && $product->stock > 0, 404);
 
-        Cart::add($product, max(1, (int) $request->input('qty', 1)));
+        // Throws a validation error ("Please choose a size.") if a required option is missing
+        $options = Cart::resolveOptions($product, (array) $request->input('options', []));
+
+        Cart::add($product, max(1, (int) $request->input('qty', 1)), $options);
 
         if ($request->expectsJson()) {
             return $this->snapshot();
@@ -31,16 +34,16 @@ class CartController extends Controller
             : redirect()->route('cart');
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request, string $line)
     {
-        Cart::set($product, (int) $request->input('qty', 0));
+        Cart::set($line, (int) $request->input('qty', 0));
 
         return $request->expectsJson() ? $this->snapshot() : back();
     }
 
-    public function remove(Request $request, Product $product)
+    public function remove(Request $request, string $line)
     {
-        Cart::set($product, 0);
+        Cart::set($line, 0);
 
         return $request->expectsJson() ? $this->snapshot() : back();
     }

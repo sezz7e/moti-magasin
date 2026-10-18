@@ -6,6 +6,13 @@
     $onSale = $product->compare_at_price && $product->compare_at_price > $product->price;
 @endphp
 
+<style>
+   #productAccordion .collapse {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+} 
+</style>
+
 <!-- Page Title -->
 <div class="flat-spacing-16 pb-0">
     <div class="container">
@@ -103,36 +110,88 @@
                             </div>
 
                             @if($product->stock > 0)
-                                <form method="POST" action="{{ route('cart.add', $product) }}" data-ajax-cart>
-                                    @csrf
-                                    <div class="tf-product-info-variant">
-                                        <div class="variant-picker-item">
-                                            <div class="variant-picker-label h6 fw-normal">Quantity</div>
-                                            <div class="variant-picker-values">
-                                                <div class="wg-quantity">
-                                                    <button type="button" class="btn-quantity btn-decrease"><i class="icon-minus"></i></button>
-                                                    <input class="quantity-product" type="text" name="qty" value="1">
-                                                    <button type="button" class="btn-quantity btn-increase"><i class="icon-plus"></i></button>
+                            <form method="POST" action="{{ route('cart.add', $product) }}" data-ajax-cart>
+                                @csrf
+                                @php
+                                    $swatchColors = [
+                                        'metal' => config('store.metal_swatches', []),
+                                        'stone' => config('store.stone_colors', []),
+                                    ];
+                                @endphp
+
+                                <div class="tf-product-info-variant">
+                                    @foreach($product->optionGroups() as $name => $group)
+                                        @php
+                                            $single = count($group['values']) === 1;
+                                            $isSwatch = in_array($name, ['metal', 'stone'], true);
+                                        @endphp
+
+                                        <div class="variant-picker-item {{ $isSwatch ? 'variant-color' : 'variant-size' }}">
+                                            <div class="variant-picker-label h6 fw-normal">
+                                                {{ $group['label'] }}:
+                                                <span class="variant-picker-label-value" data-option-value="{{ $name }}">{{ $single ? $group['values'][0] : '' }}</span>
+                                            </div>
+
+                                            @if($isSwatch)
+                                                <div class="variant-picker-values" data-option-group="{{ $name }}">
+                                                    @foreach($group['values'] as $value)
+                                                        @php $bg = $swatchColors[$name][$value] ?? '#cfc8bb'; @endphp
+                                                        <div class="hover-tooltip color-btn style-image-square {{ $single ? 'active' : '' }}"
+                                                            role="button" tabindex="0" data-option-pick="{{ $value }}">
+                                                            <span class="check-color">
+                                                                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                                                                    alt="{{ $value }}" style="background: {{ $bg }};">
+                                                            </span>
+                                                            <span class="tooltip">{{ $value }}</span>
+                                                        </div>
+                                                    @endforeach
                                                 </div>
+                                            @else
+                                                <div class="variant-picker-values">
+                                                    <div class="btn-group" data-option-group="{{ $name }}">
+                                                        @foreach($group['values'] as $value)
+                                                            <span class="size-btn {{ $single ? 'active' : '' }}" role="button" tabindex="0"
+                                                                data-option-pick="{{ $value }}">{{ $value }}</span>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            <input type="hidden" name="options[{{ $name }}]" value="{{ $single ? $group['values'][0] : '' }}"
+                                                data-label="{{ strtolower($group['label']) }}">
+                                        </div>
+                                    @endforeach
+
+                                    <p class="text-danger small mb-3" data-option-error>@error('options'){{ $message }}@enderror</p>
+
+                                    <div class="variant-picker-item">
+                                        <div class="variant-picker-label h6 fw-normal">Quantity</div>
+                                        <div class="variant-picker-values">
+                                            <div class="wg-quantity">
+                                                <button type="button" class="btn-quantity btn-decrease"><i class="icon-minus"></i></button>
+                                                <input class="quantity-product" type="text" name="qty" value="1">
+                                                <button type="button" class="btn-quantity btn-increase"><i class="icon-plus"></i></button>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="tf-product-total-quantity">
-                                        <div class="group-btn">
-                                            <button type="submit" class="tf-btn btn-fill-2 text-uppercase fw-medium animate-btn">
-                                                add to bag
-                                                <i class="icon-minus d-none d-sm-block"></i>
-                                                <span class="price-add d-none d-sm-block">PKR {{ number_format($product->price) }}</span>
-                                            </button>
-                                        </div>
-                                        <button type="submit" name="buy_now" value="1" class="tf-btn w-100 text-uppercase fw-medium">
-                                            buy it now
+                                </div>
+
+                                <div class="tf-product-total-quantity">
+                                    <div class="group-btn">
+                                        <button type="submit" class="tf-btn btn-fill-2 text-uppercase fw-medium animate-btn">
+                                            add to bag
+                                            <i class="icon-minus d-none d-sm-block"></i>
+                                            <span class="price-add d-none d-sm-block">PKR {{ number_format($product->price) }}</span>
                                         </button>
                                     </div>
-                                </form>
-                            @else
-                                <p class="h5 text-uppercase mt-4">Sold out</p>
-                            @endif
+                                    <button type="submit" name="buy_now" value="1" class="tf-btn w-100 text-uppercase fw-medium">
+                                        buy it now
+                                    </button>
+                                </div>
+                            </form>
+                        @else
+                            <p class="h5 text-uppercase mt-4">Sold out</p>
+                        @endif
                         </div>
                     </div>
                 </div>
@@ -143,26 +202,30 @@
 
 <!-- Description -->
 <div class="flat-spacing-3">
-    <div class="container">
+    <div class="container" id="productAccordion">
+        
+        <!-- Panel 1: Description -->
         <div class="widget-accordion wd-product-descriptions">
             <div class="accordion-title" data-bs-target="#description" data-bs-toggle="collapse" aria-expanded="true"
                  aria-controls="description" role="button">
                 <span class="icon icon-arrow-right-down"></span>
                 <span>Description</span>
             </div>
-            <div id="description" class="collapse show widget-desc">
+            <div id="description" class="collapse show widget-desc" data-bs-parent="#productAccordion">
                 <div class="accordion-body">
                     <h6 class="text-main-4 fw-normal">{!! nl2br(e($product->description)) !!}</h6>
                 </div>
             </div>
         </div>
+
+        <!-- Panel 2: Additional Information -->
         <div class="widget-accordion wd-product-descriptions">
             <div class="accordion-title collapsed" data-bs-target="#material" data-bs-toggle="collapse" aria-expanded="false"
                  aria-controls="material" role="button">
                 <span class="icon icon-arrow-right-down"></span>
-                <span>additional information</span>
+                <span>Additional Information</span>
             </div>
-            <div id="material" class="collapse widget-material">
+            <div id="material" class="collapse widget-material" data-bs-parent="#productAccordion">
                 <div class="accordion-body">
                     <table class="table-material">
                         <tbody>
@@ -175,9 +238,9 @@
                 </div>
             </div>
         </div>
+
     </div>
 </div>
-
 <!-- You may also like -->
 @if($related->isNotEmpty())
 <section class="flat-spacing-3">
@@ -255,6 +318,40 @@ window.addEventListener('load', function () {
     new Swiper(mainEl, {
         spaceBetween: 10,
         thumbs: thumbs ? { swiper: thumbs } : undefined,
+    });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const accordionContainer = document.getElementById('productAccordion');
+    if (!accordionContainer) return;
+
+    const collapses = accordionContainer.querySelectorAll('.collapse');
+
+    // 1. Keep at least one accordion open at all times
+    collapses.forEach(collapseEl => {
+        collapseEl.addEventListener('hide.bs.collapse', function (e) {
+            // Count how many panels are currently open
+            const openPanels = accordionContainer.querySelectorAll('.collapse.show');
+            
+            // If only 1 panel is open and the user clicked it directement to close it, stop it
+            if (openPanels.length <= 1 && openPanels[0] === collapseEl) {
+                // Only prevent closing if another panel isn't simultaneously opening
+                const isAnotherOpening = accordionContainer.querySelector('.collapsing');
+                if (!isAnotherOpening) {
+                    e.preventDefault();
+                }
+            }
+        });
+    });
+
+    // 2. Fix "opens then immediately disappears" if caused by theme JS conflicts
+    const triggers = accordionContainer.querySelectorAll('[data-bs-toggle="collapse"]');
+    triggers.forEach(trigger => {
+        trigger.addEventListener('click', function (e) {
+            e.stopPropagation(); // Prevents custom theme jQuery scripts from double-toggling
+        });
     });
 });
 </script>
