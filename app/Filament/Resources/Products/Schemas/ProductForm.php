@@ -47,6 +47,18 @@ class ProductForm
             TextInput::make('stock')
                 ->numeric()
                 ->default(1),
+            Select::make('metals')
+                ->label('Metal colour')
+                ->multiple()
+                ->options(fn () => array_combine(config('store.metals'), config('store.metals'))),
+            Select::make('stone_colors')
+                ->label('Stone / bead colour')
+                ->multiple()
+                ->options(fn () => array_combine(array_keys(config('store.stone_colors')), array_keys(config('store.stone_colors')))),
+            Select::make('sizes')
+                ->label('Sizes available')
+                ->multiple()
+                ->options(fn () => array_combine(config('store.sizes'), config('store.sizes'))),
             Toggle::make('is_active')
                 ->label('Visible in store'),
         ]);

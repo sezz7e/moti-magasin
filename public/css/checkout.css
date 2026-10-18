@@ -91,3 +91,4 @@ h1, h2 { font-weight: 500; margin: 0; }
 .card .val { color: var(--ink); }
 .card-grid { display: grid; gap: 16px; }
 @media (min-width: 560px) { .card-grid { grid-template-columns: 1fr 1fr; } }
+.opt-line { display: block; font-size: 13px; color: var(--muted); }

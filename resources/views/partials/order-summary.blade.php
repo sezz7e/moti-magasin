@@ -6,7 +6,10 @@
                 @if($img)<img src="{{ $img }}" alt="">@endif
                 <span class="badge">{{ $item->quantity }}</span>
             </div>
-            <div class="grow">{{ $item->product_name }}</div>
+            <div class="grow">
+                {{ $item->product_name }}
+                @if($item->options_label)<span class="opt-line">{{ $item->options_label }}</span>@endif
+            </div>
             <div>PKR {{ number_format($item->price * $item->quantity) }}</div>
         </li>
     @endforeach

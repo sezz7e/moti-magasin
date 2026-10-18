@@ -9,6 +9,15 @@ class OrderItem extends Model
 {
     protected $guarded = [];
 
+    protected $casts = ['options' => 'array'];
+
+    protected $appends = ['options_label'];
+
+    public function getOptionsLabelAttribute(): string
+    {
+        return implode(' · ', array_filter((array) $this->options));
+    }
+
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);

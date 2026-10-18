@@ -1,4 +1,4 @@
-<div class="card_product--V01">
+<div class="card_product--V01 {{ $gridClass ?? '' }}" {{ !empty($gridItem) ? 'data-grid-item' : '' }}>
     <div class="card_product-wrapper">
         <a href="{{ route('product', $product->slug) }}" class="product-img">
             @if($product->getFirstMediaUrl('gallery'))
@@ -11,12 +11,18 @@
         <ul class="list-product-btn">
             @if($product->stock > 0)
                 <li>
-                    <form method="POST" action="{{ route('cart.add', $product) }}" data-ajax-cart>
-                        @csrf
-                        <button type="submit" class="hover-tooltip tooltip-left box-icon" style="border:0;">
-                            <span class="icon icon-shop-cart"></span><span class="tooltip">Add to Cart</span>
-                        </button>
-                    </form>
+                    @if($product->needsOptions())
+                        <a href="{{ route('product', $product->slug) }}" class="hover-tooltip tooltip-left box-icon">
+                            <span class="icon icon-shop-cart"></span><span class="tooltip">Choose options</span>
+                        </a>
+                    @else
+                        <form method="POST" action="{{ route('cart.add', $product) }}" data-ajax-cart>
+                            @csrf
+                            <button type="submit" class="hover-tooltip tooltip-left box-icon" style="border:0;">
+                                <span class="icon icon-shop-cart"></span><span class="tooltip">Add to Cart</span>
+                            </button>
+                        </form>
+                    @endif
                 </li>
             @endif
             <li>

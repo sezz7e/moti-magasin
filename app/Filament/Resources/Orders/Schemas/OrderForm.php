@@ -31,10 +31,11 @@ class OrderForm
                 ->relationship()
                 ->schema([
                     TextInput::make('product_name')->disabled(),
+                    TextInput::make('options_label')->label('Options')->disabled(),
                     TextInput::make('quantity')->disabled(),
                     TextInput::make('price')->prefix('PKR')->disabled(),
                 ])
-                ->columns(3)
+                ->columns(4)
                 ->addable(false)
                 ->deletable(false)
                 ->reorderable(false)

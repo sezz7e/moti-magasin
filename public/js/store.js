@@ -14,7 +14,13 @@
             headers: { 'X-CSRF-TOKEN': token, 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
             body,
         });
-        if (!res.ok) throw new Error('Request failed');
+
+        if (!res.ok) {
+            const err = new Error('Request failed');
+            err.status = res.status;
+            try { err.data = await res.json(); } catch (e) { /* no body */ }
+            throw err;
+        }
         return res.json();
     }
 
@@ -39,7 +45,6 @@
         const menu = document.getElementById('mobileMenu');
         const quick = document.getElementById('quickView');
 
-        // Close whatever is open first, then show the cart
         if (menu && menu.classList.contains('show')) {
             menu.addEventListener('hidden.bs.offcanvas', showCart, { once: true });
             bootstrap.Offcanvas.getOrCreateInstance(menu).hide();
@@ -67,6 +72,55 @@
         });
     }
 
+    // A required option (metal / colour / size) that hasn't been chosen yet
+    function missingOption(form) {
+        const empty = Array.from(form.querySelectorAll('input[name^="options["]')).find((i) => !i.value);
+        return empty ? 'Please choose a ' + (empty.dataset.label || 'option') + '.' : null;
+    }
+
+    function showFormError(form, message) {
+        const box = form.querySelector('[data-option-error]');
+        if (box) box.textContent = message;
+        else alert(message);
+    }
+
+    // Release keyboard focus before a modal or offcanvas hides (avoids the aria-hidden warning)
+    ['hide.bs.modal', 'hide.bs.offcanvas'].forEach((evt) => {
+        document.addEventListener(evt, () => {
+            if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+        });
+    });
+
+    // ---------- Option pickers (capture phase, so the theme's own size-button script stays out of the way) ----------
+    document.addEventListener('click', (e) => {
+        const pick = e.target.closest('[data-option-pick]');
+        if (!pick) return;
+
+        const form = pick.closest('form');
+        const group = pick.closest('[data-option-group]');
+        if (!form || !group) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const name = group.dataset.optionGroup;
+        group.querySelectorAll('[data-option-pick]').forEach((s) => s.classList.toggle('active', s === pick));
+        form.querySelector('input[name="options[' + name + ']"]').value = pick.dataset.optionPick;
+
+        const label = form.querySelector('[data-option-value="' + name + '"]');
+        if (label) label.textContent = pick.dataset.optionPick;
+
+        const box = form.querySelector('[data-option-error]');
+        if (box) box.textContent = '';
+    }, true);
+
+    document.addEventListener('keydown', (e) => {
+        if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-option-pick]')) {
+            e.preventDefault();
+            e.target.click();
+        }
+    }, true);
+
     // ---------- Forms: order note + add to cart ----------
     document.addEventListener('submit', async (e) => {
         const noteForm = e.target.closest('form[data-cart-note]');
@@ -83,6 +137,14 @@
 
         const form = e.target.closest('form[data-ajax-cart]');
         if (!form) return;
+
+        const missing = missingOption(form);
+        if (missing) {
+            e.preventDefault();
+            showFormError(form, missing);
+            return;
+        }
+
         if (e.submitter && e.submitter.name === 'buy_now') return;
 
         e.preventDefault();
@@ -94,7 +156,11 @@
             render(data);
             openDrawer();
         } catch (err) {
-            form.submit();
+            if (err.status === 422) {
+                showFormError(form, err.data?.errors?.options?.[0] || err.data?.message || 'Please check your selection.');
+            } else {
+                form.submit();
+            }
         } finally {
             if (btn) btn.disabled = false;
         }
@@ -120,7 +186,6 @@
             const body = document.getElementById('quickViewBody');
             if (!modalEl || !body || !window.bootstrap) return;
 
-            // Make sure the modal sits directly under <body>, above the backdrop
             if (modalEl.parentElement !== document.body) document.body.appendChild(modalEl);
 
             body.innerHTML = '<div class="p-5 text-center w-100">Loading…</div>';
@@ -191,7 +256,7 @@
             timer = setTimeout(async () => {
                 try {
                     const items = (await getJson(searchInput.dataset.suggestUrl + '?q=' + encodeURIComponent(q))).slice(0, 4);
-                    if (searchInput.value.trim() !== q) return; // a newer search is already in flight
+                    if (searchInput.value.trim() !== q) return;
 
                     if (searchTitle) searchTitle.textContent = 'RESULTS';
                     searchList.innerHTML = items.length

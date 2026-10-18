@@ -12,22 +12,22 @@
                 </div>
                 <div class="tf-mini-cart-info">
                     <a href="{{ route('product', $line->product->slug) }}" class="prd-name link">{{ $line->product->name }}</a>
-                    @if($line->product->collection)
-                        <p class="type-select text-main-4">{{ $line->product->collection->name }}</p>
+                    @if($line->optionsLabel)
+                        <p class="type-select text-main-4">{{ $line->optionsLabel }}</p>
                     @endif
                     <div class="prd-quantity">
                         <p class="text-caption">Qty:</p>
                         <div class="wg-quantity style-2">
                             <button type="button" class="btn-quantity" data-cart-qty
-                                    data-url="{{ route('cart.update', $line->product) }}" data-qty="{{ $line->qty - 1 }}"><i class="icon-minus"></i></button>
+                                    data-url="{{ route('cart.update', $line->key) }}" data-qty="{{ $line->qty - 1 }}"><i class="icon-minus"></i></button>
                             <input class="quantity-product" type="text" value="{{ $line->qty }}" readonly>
                             <button type="button" class="btn-quantity" data-cart-qty
-                                    data-url="{{ route('cart.update', $line->product) }}" data-qty="{{ $line->qty + 1 }}"
-                                    @disabled($line->qty >= $line->product->stock)><i class="icon-plus"></i></button>
+                                    data-url="{{ route('cart.update', $line->key) }}" data-qty="{{ $line->qty + 1 }}"
+                                    @disabled(! $line->canIncrease)><i class="icon-plus"></i></button>
                         </div>
                     </div>
                     <a href="javascript:void(0)" class="tf-btn-line style-line-2" data-cart-remove
-                       data-url="{{ route('cart.remove', $line->product) }}"><span class="text-caption">Remove</span></a>
+                       data-url="{{ route('cart.remove', $line->key) }}"><span class="text-caption">Remove</span></a>
                 </div>
                 <p class="tf-mini-card-price h6 fw-normal">PKR {{ number_format($line->subtotal) }}</p>
             </li>

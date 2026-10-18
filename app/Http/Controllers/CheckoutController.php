@@ -33,7 +33,12 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
-        $request->merge(['phone' => preg_replace('/[\s\-\(\)\.]/', '', (string) $request->phone)]);
+        // Honeypot: real people never fill this hidden field
+        if ($request->filled('website')) {
+            return redirect()->route('home');
+        }
+
+        $request->merge(['phone' => preg_replace('/[\s\-]/', '', (string) $request->phone)]);
 
         $data = $request->validate([
             'customer_name' => ['required', 'string', 'max:120'],
@@ -46,57 +51,57 @@ class CheckoutController extends Controller
             'phone.regex' => 'Please enter a valid Pakistani mobile number, e.g. 03XX XXXXXXX.',
         ]);
 
-        $raw = Cart::raw();
+        $lines = Cart::lines();
 
-        if (empty($raw)) {
+        if ($lines->isEmpty()) {
             return redirect()->route('cart');
         }
 
-        $order = DB::transaction(function () use ($data, $raw) {
-            $products = Product::whereIn('id', array_keys($raw))
+        $order = DB::transaction(function () use ($data, $lines) {
+            $ids = $lines->map(fn ($l) => $l->product->id)->unique()->all();
+
+            $products = Product::whereIn('id', $ids)
                 ->where('is_active', true)
                 ->lockForUpdate()
-                ->get();
+                ->get()
+                ->keyBy('id');
 
-            $subtotal = 0;
-            $items = [];
+            // Stock is shared by every option of the same product
+            $wanted = $lines->groupBy(fn ($l) => $l->product->id)->map(fn ($g) => $g->sum('qty'));
 
-            foreach ($products as $product) {
-                $qty = $raw[$product->id];
+            foreach ($wanted as $id => $qty) {
+                $product = $products[$id] ?? null;
 
-                if ($qty > $product->stock) {
+                if (! $product || $qty > $product->stock) {
                     throw ValidationException::withMessages([
-                        'cart' => "Sorry, \"{$product->name}\" is no longer available in that quantity.",
+                        'cart' => 'Sorry, "' . ($product->name ?? 'an item') . '" is no longer available in that quantity.',
                     ]);
                 }
-
-                $subtotal += $product->price * $qty;
-                $items[] = ['product' => $product, 'qty' => $qty];
             }
 
-            if (empty($items)) {
-                throw ValidationException::withMessages(['cart' => 'Your cart is empty.']);
-            }
-
+            $subtotal = $lines->sum(fn ($l) => $products[$l->product->id]->price * $l->qty);
             $shipping = Cart::shippingFor($subtotal);
 
             $order = Order::create($data + [
-                'order_number' => 'MA-'.strtoupper(Str::random(6)),
+                'order_number' => 'MA-' . strtoupper(Str::random(6)),
                 'subtotal' => $subtotal,
                 'shipping' => $shipping,
                 'total' => $subtotal + $shipping,
                 'payment_method' => 'cod',
             ]);
 
-            foreach ($items as $item) {
+            foreach ($lines as $line) {
+                $product = $products[$line->product->id];
+
                 $order->items()->create([
-                    'product_id' => $item['product']->id,
-                    'product_name' => $item['product']->name,
-                    'price' => $item['product']->price,
-                    'quantity' => $item['qty'],
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                    'price' => $product->price,
+                    'quantity' => $line->qty,
+                    'options' => $line->options ?: null,
                 ]);
 
-                $item['product']->decrement('stock', $item['qty']);
+                $product->decrement('stock', $line->qty);
             }
 
             return $order;
