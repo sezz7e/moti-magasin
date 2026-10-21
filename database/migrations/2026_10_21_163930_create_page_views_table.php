@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->char('visitor_hash', 64);
             $table->string('path', 191);
+            $table->string('referrer_host', 191)->nullable();
             $table->date('visited_on');
             $table->timestamps();
 

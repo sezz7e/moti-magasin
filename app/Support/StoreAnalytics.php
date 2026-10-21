@@ -11,48 +11,21 @@ class StoreAnalytics
 {
     public function record(Request $request): void
     {
-        if (! $this->shouldRecord($request)) {
-            return;
-        }
-
         $sessionId = $request->hasSession() ? $request->session()->getId() : '';
 
         if ($sessionId === '') {
             return;
         }
 
+        $referrer = $request->headers->get('referer');
+        $host = is_string($referrer) ? parse_url($referrer, PHP_URL_HOST) : null;
+
         PageView::query()->create([
-            'visitor_hash' => hash('sha256', $sessionId),
+            'visitor_hash' => hash_hmac('sha256', $sessionId, (string) config('app.key')),
             'path' => '/'.ltrim($request->path(), '/'),
+            'referrer_host' => is_string($host) && $host !== '' ? mb_substr($host, 0, 191) : null,
             'visited_on' => now()->toDateString(),
         ]);
-    }
-
-    public function shouldRecord(Request $request): bool
-    {
-        if (! $request->isMethod('GET')) {
-            return false;
-        }
-
-        if ($request->expectsJson() || $request->ajax()) {
-            return false;
-        }
-
-        if ($request->headers->has('Purpose') || $request->headers->has('Sec-Purpose')) {
-            return false;
-        }
-
-        if ($request->is('admin', 'admin/*', 'livewire/*', 'up', 'search/suggest', 'products/*/quick-view')) {
-            return false;
-        }
-
-        $agent = (string) $request->userAgent();
-
-        if ($agent === '' || preg_match('/bot|crawl|spider|slurp|facebookexternalhit|preview|headless/i', $agent) === 1) {
-            return false;
-        }
-
-        return true;
     }
 
     public function visitorsOn(CarbonInterface $day): int

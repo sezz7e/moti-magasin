@@ -26,6 +26,8 @@ class AdminAccessTest extends TestCase
     {
         $this->actingAs(User::factory()->admin()->create())
             ->get('/admin')
-            ->assertOk();
+            ->assertOk()
+            ->assertSee('Visitors today')
+            ->assertSee('Sales');
     }
 }

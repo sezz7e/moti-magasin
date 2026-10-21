@@ -7,6 +7,8 @@ use Filament\Widgets\ChartWidget;
 
 class TrafficChart extends ChartWidget
 {
+    protected static bool $isLazy = false;
+
     protected static ?int $sort = 2;
 
     protected ?string $heading = 'Visitors';

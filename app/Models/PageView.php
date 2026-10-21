@@ -9,6 +9,7 @@ class PageView extends Model
     protected $fillable = [
         'visitor_hash',
         'path',
+        'referrer_host',
         'visited_on',
     ];
 
