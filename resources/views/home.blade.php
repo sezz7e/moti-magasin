@@ -5,54 +5,56 @@
     $hero = $products->first(); 
 @endphp
 
-<!-- Hero Banner (DYNAMIC HERO) -->
-<div class="hero-banner ctn-hover">
-    <div class="container">
-        <div class="hero-main">
-            {{-- Dynamically load the $hero image into the primary spot --}}
-            <div class="img_item item-1 hover-repel">
-                @if($hero && $hero->getFirstMediaUrl('gallery'))
-                    <img src="{{ $hero->getFirstMediaUrl('gallery', 'large') }}" data-src="{{ $hero->getFirstMediaUrl('gallery', 'large') }}" alt="{{ $hero->name }}" class="lazyload wow fadeInLeft" style="object-fit: cover; height: 100%;">
-                @else
-                    <img src="images/section/img-item-1.jpg" data-src="images/section/img-item-1.jpg" alt="Trending" class="lazyload wow fadeInLeft">
-                @endif
-            </div>
-            
-            {{-- Keep template secondary images --}}
-            <div class="img_item item-2 hover-repel d-none d-lg-block">
-                <img src="images/section/img-item-2.jpg" data-src="images/section/img-item-2.jpg" alt="Trending" class="lazyload wow fadeInLeftBottom">
-            </div>
-            <div class="img_item item-3 hover-repel d-none d-lg-block">
-                <img src="images/section/img-item-3.jpg" data-src="images/section/img-item-3.jpg" alt="Trending" class="lazyload wow fadeInRightBottom">
-            </div>
-            <div class="img_item item-4 hover-repel">
-                <img src="images/section/img-item-4.jpg" data-src="images/section/img-item-4.jpg" alt="Trending" class="lazyload wow fadeInRight">
-            </div>
-
-            <div class="hero-content">
-                <h6 class="tag">MOTI ATELIER</h6>
-                <p class="title text-hero font-2">
-                    HANDMADE <br> <span class="fst-italic">Desi</span> JEWELLERY
-                </p>
-                <div class="btn-group mt-4">
-                    <a href="#collections" class="tf-btn text-uppercase type-large">
-                        Shop Now
-                        <i class="icon-arrow-right-3 fs-24"></i>
-                    </a>
+<!-- Banner Home -->
+<section class="tf-slideshow">
+    <div class="slider_wrap type-2">
+        <div class="sld-image">
+            <img src="images/slider/slider-6.jpg" data-src="images/slider/slider-6.jpg" alt="" class="lazyload">
+        </div>
+        <div class="sld-content-2">
+            <div class="container">
+                <div class="content-sld text-center">
+                    <h6 class="text-white text-uppercase">Trending</h6>
+                    <p class="title-sld-3 font-2">
+                        Unveil Your <br class="d-none d-md-block">
+                        <span class="fst-italic">Signature</span> Look
+                    </p>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 col-12 offset-sm-6">
+                        <div class="content-sld-2">
+                            <p class="sub-title-sld-2 ">
+                                Explore our stunning collection of handcrafted jewelry that blends <br class="d-none d-lg-block">
+                                timeless elegance with modern style. Each piece is designed to <br class="d-none d-lg-block">
+                                empower your individuality—make your statement today!
+                            </p>
+                            <div class="btn-group">
+                                <a href="shop-default.html" class="tf-btn type-large style-white-2">
+                                    Shop Now
+                                    <i class="icon-arrow-right fs-24"></i>
+                                </a>
+                                <a href="shop-collection-list.html" class="text-white link text-uppercase">
+                                    explore more
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="sld-img-item d-none d-xxl-block">
+            <img src="images/slider/img-item.jpg" data-src="images/slider/img-item.jpg" alt="Image" class="lazyload">
+        </div>
     </div>
-</div>
-<!-- /Hero Banner -->
+</section>
+<!-- /Banner Home -->
 
 <!-- Banner Text (STORY SECTION) -->
 <section class="flat-spacing-3 pt-0 mt-5">
     <div class="container">
         <div class="banner_text flex-sm-nowrap">
             <h3 data-reveal class="text-color-change fw-normal text-sm-start mb-0" style="perspective: 1200px;">
-                Every bead is chosen and threaded by hand, <br class="d-none d-xl-block">
-                one piece at a time.
+                Moti Atelier is a small handmade jewelry studio in Lahore. Every bracelet is strung by hand, bead by bead, with a love for desi colors and timeless style. We’re just getting started, and every piece is made with care.
             </h3>
         </div>
     </div>
@@ -176,24 +178,24 @@
 <div class="bg-dark-black">
     <div class="tf_marquee-V01 style_2 infiniteSlide" data-speed="100">
         <!-- item 1 -->
-        <p>Black Friday Sale</p>
+        <p>Welcome Discounts Live Now</p>
         <i class="icon-rhombus"></i>
-        <p class="text-clip style-white">New Season Essential</p>
+        <p class="text-clip style-white">Welcome Discounts Live Now</p>
         <i class="icon-diamond"></i>
         <!-- item 2 -->
-        <p>Black Friday Sale</p>
+        <p>Use Code MOTI10 to get 10% off on your first order</p>
         <i class="icon-diamond"></i>
-        <p class="text-clip style-white">New Season Essential</p>
+        <p class="text-clip style-white">Use Code MOTI10 to get 10% off on your first order</p>
         <i class="icon-diamond"></i>
         <!-- item 3 -->
-        <p>Black Friday Sale</p>
+        <p>Welcome Discounts Live Now</p>
         <i class="icon-diamond"></i>
-        <p class="text-clip style-white">New Season Essential</p>
+        <p class="text-clip style-white">Welcome Discounts Live Now</p>
         <i class="icon-diamond"></i>
         <!-- item 4 -->
-        <p>Black Friday Sale</p>
+        <p>Use Code MOTI10 to get 10% off on your first order</p>
         <i class="icon-diamond"></i>
-        <p class="text-clip style-white">New Season Essential</p>
+        <p class="text-clip style-white">Use Code MOTI10 to get 10% off on your first order</p>
         <i class="icon-diamond"></i>
     </div>
 </div>
@@ -210,14 +212,11 @@
                 <div class="container">
                     <div class="col-md-5 offset-md-7">
                         <div class="wrap wow fadeInUp">
-                            <h6 class="caption fw-normal">SUMMER SALE</h6>
-                            <p class="title text-hero-2 font-2">Radiate Elegance, <br class="d-none d-xl-block"> <span class="fst-italic">Wear
-                                    Confidence</span>
+                            <h6 class="caption fw-normal">HANDMADE FOR GIFTING</h6>
+                            <p class="title text-hero-2 font-2">Gift Something <br class="d-none d-xl-block"> <span class="fst-italic">Made by Hand,</span>
                             </p>
-                            <p class="sub-title">Discover exquisitely crafted jewelry designed to complement your style. From timeless
-                                classics to modern
-                                statement pieces, find the perfect sparkle for every occasion.</p>
-                            <a href="shop-collection-list.html" class="tf-btn btn-fill animate-btn type-large text-uppercase">
+                            <p class="sub-title">Looking for a gift that feels personal? Our handmade bead bracelets, including gajra bead bracelets, are made for birthdays, weddings, Eid and every moment in between.</p>    
+                            <a href="#" class="tf-btn btn-fill animate-btn type-large text-uppercase">
                                 Shop Collection
                                 <i class="icon-arrow-right-2 fs-24"></i>
                             </a>
@@ -591,6 +590,8 @@
 
 
 <!-- ALL TEMPLATE MODALS GO HERE -->
+
+
     <!-- Auto Newsletter -->
     <!-- <div class="modal modalCentered fade auto-popup modal-auto-newletter" id="autoNewletter">
         <div class="modal-dialog modal-dialog-centered">
