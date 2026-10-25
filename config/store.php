@@ -3,6 +3,7 @@
 return [
     'shipping_fee' => 250, // PKR, placeholder: set your real rate
     'free_shipping_over' => 3000, // e.g. 5000 turns on free shipping and the progress bar; null = off
+    'delivery_estimate' => null,
 
     'contact' => [
         'whatsapp' => '923238405815',   // digits with country code, no + or spaces, e.g. '923001234567'
@@ -23,7 +24,7 @@ return [
         'Multicolour' => 'linear-gradient(135deg, #c0392b, #2f5d9e, #2e7d5b)',
     ],
 
-        'metal_swatches' => [
+    'metal_swatches' => [
         'Gold' => '#d4af37',
         'Silver' => '#c0c0c0',
         'Rose Gold' => '#e0a899',

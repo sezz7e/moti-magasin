@@ -78,65 +78,9 @@
         </div>
         <!-- /Top Bar -->
 
-        <!-- Header -->
-        <header class="tf-header line-bt-2">
-            <div class="container">
-                <div class="row align-items-center">
-                    <!-- Mobile Menu Toggle -->
-                    <div class="col-md-4 col-3 d-xl-none">
-                        <a href="#mobileMenu" data-bs-toggle="offcanvas" class="btn-mobile-menu">
-                            <span></span>
-                        </a>
-                    </div>
-                    
-                    <!-- Logo / Brand -->
-                    <div class="col-xl-2 col-md-4 col-6 text-center text-xl-start">
-                        <a href="{{ route('home') }}" class="logo-site">
-                            <span class="font-serif text-2xl tracking-[0.2em] uppercase">Moti Atelier</span>
-                        </a>
-                    </div>
-                    
-                    <!-- Desktop Navigation -->
-                    <div class="col-xl-8 d-none d-xl-block">
-                        <nav class="box-navigation justify-content-center">
-                            <ul class="box-nav-menu">
-                                {{-- 4. Routes injected here --}}
-                                <li class="menu-item"><a href="{{ route('home') }}" class="item-link">Home</a></li>
-                                <li class="menu-item"><a href="{{ route('about') }}" class="item-link">About</a></li>
-                                <li class="menu-item"><a href="{{ route('home') }}#collections" class="item-link">Collections</a></li>
-                            </ul>
-                        </nav>
-                    </div>
-                    
-                    <!-- Right Icons (Cart) -->
-                
-                    <div class="col-xl-2 col-md-4 col-3">
-                        <ul class="nav-icon">
-                            <li class="d-inline-flex">
-                                <a href="#search" data-bs-toggle="offcanvas" class="nav-icon-item text-black link" aria-label="Search">
-                                    <i class="icon icon-search"></i>
-                                </a>
-                            </li>
-                            <li class="br-line d-none d-xl-flex"></li>
-                            <li class="d-none d-md-inline-flex">
-                                <a href="#log" data-bs-toggle="modal" class="nav-icon-item text-black link">
-                                    <i class="icon icon-user"></i>
-                                </a>
-                            </li>
-                            <li class="d-inline-flex">
-                                <a href="#shoppingCart" data-bs-toggle="offcanvas" class="nav-icon-item text-black link" aria-label="Open cart">
-                                    <i class="icon icon-cart"></i>
-                                    <span class="count-notice" data-cart-count>{{ \App\Support\Cart::count() }}</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                </div>
-                
-            </div>
-        </header>
-        <!-- /Header -->
+        @include('partials.header')
+
+
 
         {{-- 6. Main Content Area --}}
         <main>
@@ -306,6 +250,8 @@
     @include('partials.cart-drawer')
 
     @include('partials.search-offcanvas')
+
+    @include('partials.toolbar')
 
     <!-- Javascript -->
     {{-- Wrapped all JS scripts in asset() to ensure they load from your public folder --}}
